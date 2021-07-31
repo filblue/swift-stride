@@ -28,5 +28,10 @@ final class StrideTests: XCTestCase {
         XCTAssertEqual(stride(ex, over: [.low(0), .high(5), .low(0)]).count, 1)
 
         XCTAssertEqual(stride(ex, over: [.low(0), .high(10), .low(2)]).count, 9)
+
+        let ps: [Point<Int, Int>] = [(x: (pos: 0, dur: 1), y: 0), (x: (pos: 1, dur: 2), y: 2)]
+        let stride = stride(points: ps, duration: 4, over: [.low(0), .high(3), .low(0)])
+        XCTAssertEqual(stride.count, 3)
+        XCTAssertEqual(stride[0].count, 2)
     }
 }

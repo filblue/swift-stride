@@ -4,6 +4,38 @@ public enum Waypoint<T: Strideable> {
     case high(T)
 }
 
+public typealias Point<X: Strideable, Y: Strideable> = (x: (pos: X, dur: X.Stride), y: Y)
+
+public func stride<X: Strideable, Y: Strideable>(
+    points: [Point<X, Y>],
+    duration: X.Stride,
+    over waypoints: [Waypoint<Y>],
+    by step: Y.Stride = 1
+) -> [[Point<X, Y>]] {
+
+    let steps = stride(points.map(\.y), over: waypoints, by: step)
+
+    var _points: [[Point<X, Y>]] = []
+
+    var stepOffset: X.Stride? = nil
+    for step in steps {
+
+        let fy: (Y) -> Y = { $0.advanced(by: step) }
+        let fposx: (X) -> X = { pos in stepOffset.map { pos.advanced(by: $0) } ?? pos }
+
+        _points.append(
+            points.map { (
+                x: (pos: fposx($0.x.pos), dur: $0.x.dur),
+                y: fy($0.y)
+            ) }
+        )
+
+        stepOffset = stepOffset.map { $0 + duration } ?? duration
+    }
+
+    return _points
+}
+
 public func stride<T: Strideable>(
     _ m: [T],
     over waypoints: [Waypoint<T>],
